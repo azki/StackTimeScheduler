@@ -13,13 +13,18 @@ body { font-family:Georgia; background:url('wood_pattern.png') repeat; }
 
 @font-face {font-family:'digital'; src:url('DS-DIGI.TTF');}
 .digit-font {font-size:32px; font-family:digital, arial, verdana; text-shadow:0 0 5px rgba(255, 255, 255, 1); }
-#popText {font-size:32px;}
 #timeTime {display:inline-block; min-width:160px; text-align:left; }
+
+h3 {margin:2px 0; font-size:32px;}
 button {width:95%; font-family:Georgia; font-size:32px;}
 input {width:90%; height:40px;}
-h3 {margin:2px 0; font-size:32px;}
+#stackView {text-align:left;}
+
+h4 {margin:2px 0; font-size:24px;}
 ul {padding-left:32px; text-align:left;}
-#headOfList {display:none;}
+#headOfListForHistory {display:none;}
+
+#scrollTopBtn {position:fixed; right:5px; bottom:5px; font-weight:700; font-size:36px; color:#080; cursor:pointer;}
 		</style>
    	</head>
 	<body>
@@ -30,19 +35,25 @@ ul {padding-left:32px; text-align:left;}
 			</span>
 		</div>
 		<div id="popPanel" class="panel">
-			<span id="popText"></span><br/>
+			<h3 id="popText"></h3>
 			<button id="popBtn">end</button>
 		</div>
 		<div id="pushPanel" class="panel">
 			<input type="text" id="pushText"/><br/>
 			<button id="pushBtn">start</button>
 		</div>
+		<div id="stackPanel" class="panel">
+			<h4>stack</h4>
+			<ul id="stackView"></ul>
+		</div>
 		<div id="logPanel" class="panel">
-			<h3>history</h3>
+			<h4>history</h4>
 			<ul>
-				<li id="headOfList"></li>
+				<li id="headOfListForHistory"></li>
 			</ul>
 		</div>
+		<p><br/></p>
+		<a id="scrollTopBtn" href="#">↑</a>
 		<!-- 귀찮아.. 최근 100개만 있으면 댔지.. 머.
 		<div id="morePanel" class="panel">
 			<button id="moreBtn">more..</button>
@@ -129,6 +140,9 @@ function loopTimer() {
 }
 function getElapseString(elapse) {
 	var value, unit, timeArr = [], result = '';
+	if (elapse < 0) {
+		return 'ing';
+	}
 	elapse = Math.ceil(elapse / 1000);
 	unit = 60;
 	value = elapse % unit;
@@ -177,7 +191,7 @@ function addLog(logItem) {
 		$li.append('<br>');
 		$li.append($('<span>').text('consumed: ' + getElapseString(logItem.elapse)));
 	}
-	$('#headOfList').after($li);
+	$('#headOfListForHistory').after($li);
 }
 function getTimeStamp() {
 	return (new Date()).toString().split(' GMT')[0];
@@ -224,6 +238,20 @@ $('#pushText').keydown(function (ev) {
 function resetText() {
 	$('#pushText').val('');
 }
+function drawStackView() {
+	var i, $parent, $item;
+	$parent = $('#stackView');
+	$parent.empty();
+	for (i = data.length - 2; 0 <= i; i -= 1) {
+		$item = $('<li>');
+		$('<span>').text(data[i].title).appendTo($item);
+		$('<span>').css({
+			color: '#777'
+		}).text(' has ').appendTo($item);
+		$('<span>').text(getElapseString(data[i].elapse)).appendTo($item);
+		$parent.append($item);
+	}
+}
 $('#pushBtn').click(function () {
 	if ($('#pushText').val() === '') {
 		$('#pushText').focus();
@@ -235,6 +263,7 @@ $('#pushBtn').click(function () {
 	calculationTime();
 	saveData();
 	drawTitle();
+	drawStackView();
 	resetText();
 });
 $('#popBtn').click(function () {
@@ -242,11 +271,13 @@ $('#popBtn').click(function () {
 	calculationTime();
 	saveData();
 	drawTitle();
+	drawStackView();
 	resetText();
 });
 $(function () {
 	loadData();
 	drawTitle();
+	drawStackView();
 	drawLog();
 	loopTimer();
 	saveData();
