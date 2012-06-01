@@ -235,8 +235,9 @@ $('#pushText').keydown(function (ev) {
 		$('#pushBtn').click();
 	}
 });
-function resetText() {
+function resetTextAndScrollTop() {
 	$('#pushText').val('');
+	scrollTo(0, 0);
 }
 function drawStackView() {
 	var i, $parent, $item;
@@ -264,7 +265,7 @@ $('#pushBtn').click(function () {
 	saveData();
 	drawTitle();
 	drawStackView();
-	resetText();
+	resetTextAndScrollTop();
 });
 $('#popBtn').click(function () {
 	popTimer();
@@ -272,7 +273,7 @@ $('#popBtn').click(function () {
 	saveData();
 	drawTitle();
 	drawStackView();
-	resetText();
+	resetTextAndScrollTop();
 });
 $(function () {
 	loadData();
