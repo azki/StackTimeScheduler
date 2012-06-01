@@ -12,10 +12,10 @@ body { font-family:Georgia; background:url('wood_pattern.png') repeat; }
 .panel {margin:5px; border:1px dotted #999; text-align:center;}
 
 @font-face {font-family:'digital'; src:url('DS-DIGI.TTF');}
-.digit-font {font-size:36px; font-family:digital, arial, verdana; text-shadow:0 0 5px rgba(255, 255, 255, 1); }
-#popText {font-size:36px;}
-button {width:95%; font-family:Georgia; font-size:36px;}
-input {width:90%; height:36px;}
+.digit-font {font-size:32px; font-family:digital, arial, verdana; text-shadow:0 0 5px rgba(255, 255, 255, 1); }
+#popText {font-size:32px;}
+button {width:95%; font-family:Georgia; font-size:32px;}
+input {width:90%; height:32px;}
 #headOfList {display:none;}
 		</style>
    	</head>
@@ -34,11 +34,13 @@ input {width:90%; height:36px;}
 			<input type="text" id="pushText"/><br/>
 			<button id="pushBtn">start</button>
 		</div>
-		<h2>history</h2>
-		<ul id="logPanel" class="panel">
-			<li id="headOfList"></li>
-		</ul>
-		<!-- 귀찮아.. 최근 10개만 있으면 댔지.. 머.
+		<div id="logPanel" class="panel">
+			<h2>history</h2>
+			<ul>
+				<li id="headOfList"></li>
+			</ul>
+		</div>
+		<!-- 귀찮아.. 최근 20개만 있으면 댔지.. 머.
 		<div id="morePanel" class="panel">
 			<button id="moreBtn">more..</button>
 		</div>
