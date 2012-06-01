@@ -15,15 +15,17 @@ body { font-family:Georgia; background:url('wood_pattern.png') repeat; }
 .digit-font {font-size:32px; font-family:digital, arial, verdana; text-shadow:0 0 5px rgba(255, 255, 255, 1); }
 #timeTime {display:inline-block; min-width:160px; text-align:left; }
 
-h3 {margin:2px 0; font-family:"궁서"; font-size:32px; font-weight:700; color:#f00;}
+h3 {margin:2px 0; font-size:32px; font-weight:700; color:#f00;}
 button {width:95%; font-family:Georgia; font-size:32px;}
-input {width:90%; height:40px;}
+input {width:90%; height:40px; text-align:center;}
 #stackView {text-align:left;}
+.large-font {font-size:large;}
 
-h4 {margin:2px 0; font-size:24px;}
-ul {padding-left:32px; text-align:left;}
+h4 {margin:2px 0 0 0; font-size:24px;}
+ul {margin:4px 0; padding-left:32px; text-align:left;}
 #headOfListForHistory {display:none;}
 
+.not-important {font-style:italic; color:#777;}
 #scrollTopBtn {position:fixed; right:5px; bottom:5px; font-weight:700; font-size:36px; color:#080; cursor:pointer;}
 		</style>
    	</head>
@@ -39,7 +41,7 @@ ul {padding-left:32px; text-align:left;}
 			<button id="popBtn">end</button>
 		</div>
 		<div id="pushPanel" class="panel">
-			<input type="text" id="pushText"/><br/>
+			<input type="text" id="pushText" placeholder="title"/><br/>
 			<button id="pushBtn">start</button>
 		</div>
 		<div id="stackPanel" class="panel">
@@ -183,13 +185,18 @@ var titleOfType = {
 	'end': '[End]'
 };
 function addLog(logItem) {
-	var $li, text = titleOfType[logItem.type] + ' ' + logItem.item.title + ' (' + logItem.timeStamp + ')';
-	$li = $('<li>').append($('<span>').css({
+	var $li = $('<li>');
+	$('<span>').css({
 		color: colorOfType[logItem.type]
-	}).text(text));
+	}).text(titleOfType[logItem.type] + ' ').appendTo($li);
+	$('<span>').css({
+		color: colorOfType[logItem.type]
+	}).addClass('large-font').text(logItem.item.title).appendTo($li);
+	$('<span>').addClass('not-important').text(' (' + logItem.timeStamp + ')').appendTo($li);
 	if (logItem.elapse) {
-		$li.append('<br>');
-		$li.append($('<span>').text('consumed: ' + getElapseString(logItem.elapse)));
+		$('<br>').appendTo($li);
+		$('<span>').text('spent: ').appendTo($li);
+		$('<span>').addClass('large-font').text(getElapseString(logItem.elapse)).appendTo($li);
 	}
 	$('#headOfListForHistory').after($li);
 }
@@ -245,11 +252,9 @@ function drawStackView() {
 	$parent.empty();
 	for (i = data.length - 2; 0 <= i; i -= 1) {
 		$item = $('<li>');
-		$('<span>').text(data[i].title).appendTo($item);
-		$('<span>').css({
-			color: '#777'
-		}).text(' has ').appendTo($item);
-		$('<span>').text(getElapseString(data[i].elapse)).appendTo($item);
+		$('<span>').addClass('large-font').text(data[i].title).appendTo($item);
+		$('<span>').addClass('not-important').text(' has ').appendTo($item);
+		$('<span>').addClass('large-font').text(getElapseString(data[i].elapse)).appendTo($item);
 		$parent.append($item);
 	}
 }
