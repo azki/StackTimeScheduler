@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<meta name="viewport" content="user-scalable=no, initial-scale=1.0, width=320" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title>Push Push Time</title>
+		<style>
+html,body { margin:0; padding:0; }
+body { font-family:Georgia; background:url('wood_pattern.png') repeat; }
+.panel {margin:5px; border:1px dotted #999; text-align:center;}
+
+@font-face {font-family:'digital'; src:url('DS-DIGI.TTF');}
+.digit-font {font-size:36px; font-family:digital, arial, verdana; text-shadow:0 0 5px rgba(255, 255, 255, 1); }
+#popText {font-size:36px;}
+button {width:95%; font-family:Georgia; font-size:36px;}
+input {width:90%;}
+#headOfList {display:none;}
+		</style>
+   	</head>
+	<body>
+		<div id="timerPanel" class="panel">
+			<span id="timeDay" class="digit-font">0</span>days
+			<span class="digit-font">
+				<span id="timeHour">00</span>:<span id="timeMin">00</span>:<span id="timeSec">00</span>.<span id="timeMsec">00</span>
+			</span>
+		</div>
+		<div id="popPanel" class="panel">
+			<span id="popText"></span><br/>
+			<button id="popBtn">end</button>
+		</div>
+		<div id="pushPanel" class="panel">
+			<input type="text" id="pushText"/><br/>
+			<button id="pushBtn">start</button>
+		</div>
+		<h2>history</h2>
+		<ul id="logPanel" class="panel">
+			<li id="headOfList"></li>
+		</ul>
+		<!-- 귀찮아.. 최근 10개만 있으면 댔지.. 머.
+		<div id="morePanel" class="panel">
+			<button id="moreBtn">more..</button>
+		</div>
+		-->
+		<script src="jquery.js"></script>
+		<script>
+var data = [];
+var log = [];
+var time = 0;
+function saveData() {
+	console.log("saved: " + time);
+	localStorage.setItem("ppt_time", "" + time);
+	localStorage.setItem("ppt_data", JSON.stringify(data));
+	localStorage.setItem("ppt_log", JSON.stringify(log));
+}
+function loadData() {
+	time = localStorage.getItem("ppt_time") || 0;
+	console.log("loaded: " + time);
+	if (time) {
+		data = JSON.parse(localStorage.getItem("ppt_data"));
+		log = JSON.parse(localStorage.getItem("ppt_log"));
+	} else {
+		time = +new Date();
+		data = [{
+			title: "잉여타임",
+			elapse: -1
+		}];
+		log = [];
+	}
+}
+function drawLog() {
+	var i, len;
+	len = log.length;
+	for (i = 0; i < len; i += 1) {
+		addLog(log[i]);
+	}
+}
+function getTopItem() {
+	return data[data.length - 1];
+}
+function calculationTime() {
+	var item = getTopItem();
+	if (0 <= item.elapse) {
+		time = +new Date() - item.elapse;
+	}
+	item.elapse = -1;
+}
+function drawTitle() {
+	var item = getTopItem();
+	$("#popText").text(item.title);
+}
+function createItem() {
+	return {
+		title: $("#pushText").val(),
+		elapse: 0
+	};
+}
+function formatTime(selector, unit, elapse) {
+	var value = elapse % unit;
+	$(selector).text(9 < value ? value : '0' + value);
+	elapse -= value;
+	return elapse / unit;
+}
+function drawTime() {
+	var elapse = +new Date() - time;
+	elapse = Math.floor(elapse / 10);
+	elapse = formatTime("#timeMsec", 100, elapse);
+	elapse = formatTime("#timeSec", 60, elapse);
+	elapse = formatTime("#timeMin", 60, elapse);
+	elapse = formatTime("#timeHour", 24, elapse);
+	$("#timeDay").text(elapse);
+}
+function loopTimer() {
+	setTimeout(function () {
+		drawTime();
+		loopTimer();
+	}, Math.floor(Math.random() * 100));
+}
+var colorOfType = {
+	'start': '#f00',
+	'end': '#00f'
+};
+function getElapseString(elapse) {
+	var value, unit, timeArr = [], result = '';
+	elapse = Math.ceil(elapse / 1000);
+	unit = 60;
+	value = elapse % unit;
+	timeArr.push(9 < value ? value : '0' + value);
+	elapse -= value;
+	elapse /= unit;
+	unit = 60;
+	value = elapse % unit;
+	timeArr.push(9 < value ? value : '0' + value);
+	elapse -= value;
+	elapse /= unit;
+	unit = 24;
+	value = elapse % unit;
+	timeArr.push(9 < value ? value : '0' + value);
+	elapse -= value;
+	elapse /= unit;
+	if (0 < elapse) {
+		result += elapse + '일 ';
+	}
+	elapse = timeArr.pop();
+	if (0 < elapse) {
+		result += elapse + '시간 ';
+	}
+	elapse = timeArr.pop();
+	if (0 < elapse) {
+		result += elapse + '분 ';
+	}
+	elapse = timeArr.pop();
+	result += elapse + '초';
+	return result;
+}
+function addLog(logItem) {
+	var text = '[' + logItem.type + '] ' + logItem.item.title + ' (' + logItem.timeStamp + ')';
+	if (logItem.elapse) {
+		text += ' 소요시간: ' + getElapseString(logItem.elapse);
+	}
+	$("#headOfList").after($("<li>").css({
+		color: colorOfType[logItem.type]
+	}).text(text));
+}
+function getTimeStamp() {
+	return (new Date()).toString().split(" GMT")[0];
+}
+function calculationElapse() {
+	var elapse = +new Date() - time;
+	getTopItem().elapse = elapse;
+}
+function pushTimer(item) {
+	data.push(item);
+	var logItem = {
+		type: 'start',
+		item: item,
+		timeStamp: getTimeStamp()
+	};
+	log.push(logItem);
+	if (20 < log.length) {
+		log.shift();
+	}
+	addLog(logItem);
+}
+function popTimer() {
+	if (data.length < 2) {
+		return;
+	}
+	var logItem = {
+		type: 'end',
+		item: data.pop(),
+		timeStamp: getTimeStamp(),
+		elapse: +new Date() - time
+	};
+	log.push(logItem);
+	if (20 < log.length) {
+		log.shift();
+	}
+	addLog(logItem);
+}
+$("#pushText").keydown(function (ev) {
+	if (ev.keyCode === 13) {
+		ev.preventDefault();
+		$("#pushBtn").click();
+	}
+});
+function resetText() {
+	$("#pushText").val("");
+}
+$("#pushBtn").click(function () {
+	var item = createItem();
+	calculationElapse();
+	pushTimer(item);
+	calculationTime();
+	saveData();
+	drawTitle();
+	resetText();
+});
+$("#popBtn").click(function () {
+	popTimer();
+	calculationTime();
+	saveData();
+	drawTitle();
+	resetText();
+});
+$(function () {
+	loadData();
+	drawTitle();
+	drawLog();
+	loopTimer();
+	saveData();
+});
+		</script>
+	</body>
+</html>

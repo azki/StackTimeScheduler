@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns		= "http://www.w3.org/ns/widgets"
+	xmlns:gap	= "http://phonegap.com/ns/1.0"
+	id		= "org.azki.stack-time-scheduler"
+	version 	= "1.0.0">
+
+	<name>StackTimer</name>
+
+	<description>
+		stack time scheduler
+	</description>
+
+	<author href="http://azki.org"
+		email="azki@azki.org">
+		Azki
+	</author>
+	
+	<icon src="icon.png" gap:role="default" />
+	
+	<preference name="orientation" value="portrait" />
+</widget>
