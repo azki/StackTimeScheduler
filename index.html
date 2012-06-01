@@ -15,14 +15,17 @@ body { font-family:Georgia; background:url('wood_pattern.png') repeat; }
 .digit-font {font-size:32px; font-family:digital, arial, verdana; text-shadow:0 0 5px rgba(255, 255, 255, 1); }
 #timeTime {display:inline-block; min-width:160px; text-align:left; }
 
-h3 {margin:2px 0; font-size:32px; font-weight:700; color:#f00;}
+h3 {margin:2px 0; font-size:32px; font-weight:700; color:#f33;}
 button {width:95%; font-family:Georgia; font-size:32px;}
-input {width:90%; height:40px; text-align:center;}
+#popBtn {color:#33f;}
+#pushBtn {color:#f33;}
+input {width:90%; height:40px; font-size:20px; text-align:center;}
 #stackView {text-align:left;}
-.large-font {font-size:large;}
+.large-font {font-size:larger;}
+.spent {background:#000; color:#fff;}
 
 h4 {margin:2px 0 0 0; font-size:24px;}
-ul {margin:4px 0; padding-left:32px; text-align:left;}
+ul {margin:4px 0; padding-left:32px; padding-right:16px; text-align:left;}
 #headOfListForHistory {display:none;}
 
 .not-important {font-style:italic; color:#777;}
@@ -177,26 +180,20 @@ function getElapseString(elapse) {
 	return result;
 }
 var colorOfType = {
-	'start': '#f00',
-	'end': '#00f'
-};
-var titleOfType = {
-	'start': '[Start]',
-	'end': '[End]'
+	'start': '#f33',
+	'end': '#33f'
 };
 function addLog(logItem) {
-	var $li = $('<li>');
+	var $div, $li = $('<li>');
 	$('<span>').css({
 		color: colorOfType[logItem.type]
-	}).text(titleOfType[logItem.type] + ' ').appendTo($li);
-	$('<span>').css({
-		color: colorOfType[logItem.type]
-	}).addClass('large-font').text(logItem.item.title).appendTo($li);
+	}).text(logItem.item.title).appendTo($li);
 	$('<span>').addClass('not-important').text(' (' + logItem.timeStamp + ')').appendTo($li);
 	if (logItem.elapse) {
-		$('<br>').appendTo($li);
-		$('<span>').text('spent: ').appendTo($li);
-		$('<span>').addClass('large-font').text(getElapseString(logItem.elapse)).appendTo($li);
+		$div = $('<div>').addClass('spent').appendTo($li);
+		$('<span>').addClass('large-font').text(getElapseString(logItem.elapse)).appendTo($div);
+		$('<span>').addClass('not-important').text(' spent for ').appendTo($div);
+		$('<span>').addClass('large-font').text(logItem.item.title).appendTo($div);
 	}
 	$('#headOfListForHistory').after($li);
 }
