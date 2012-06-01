@@ -15,7 +15,10 @@ body { font-family:Georgia; background:url('wood_pattern.png') repeat; }
 .digit-font {font-size:32px; font-family:digital, arial, verdana; text-shadow:0 0 5px rgba(255, 255, 255, 1); }
 #popText {font-size:32px;}
 button {width:95%; font-family:Georgia; font-size:32px;}
-input {width:90%; height:32px;}
+input {width:90%; height:40px;}
+h3 {margin:2px 0; font-size:32px;}
+ul {text-align:left;}
+pre {margin:0; padding:0;}
 #headOfList {display:none;}
 		</style>
    	</head>
@@ -35,7 +38,7 @@ input {width:90%; height:32px;}
 			<button id="pushBtn">start</button>
 		</div>
 		<div id="logPanel" class="panel">
-			<h2>history</h2>
+			<h3>history</h3>
 			<ul>
 				<li id="headOfList"></li>
 			</ul>
@@ -51,21 +54,19 @@ var data = [];
 var log = [];
 var time = 0;
 function saveData() {
-	console.log("saved: " + time);
-	localStorage.setItem("ppt_time", "" + time);
-	localStorage.setItem("ppt_data", JSON.stringify(data));
-	localStorage.setItem("ppt_log", JSON.stringify(log));
+	localStorage.setItem('ppt_time', '' + time);
+	localStorage.setItem('ppt_data', JSON.stringify(data));
+	localStorage.setItem('ppt_log', JSON.stringify(log));
 }
 function loadData() {
-	time = localStorage.getItem("ppt_time") || 0;
-	console.log("loaded: " + time);
+	time = localStorage.getItem('ppt_time') || 0;
 	if (time) {
-		data = JSON.parse(localStorage.getItem("ppt_data"));
-		log = JSON.parse(localStorage.getItem("ppt_log"));
+		data = JSON.parse(localStorage.getItem('ppt_data'));
+		log = JSON.parse(localStorage.getItem('ppt_log'));
 	} else {
 		time = +new Date();
 		data = [{
-			title: "잉여타임",
+			title: 'surplus time',
 			elapse: -1
 		}];
 		log = [];
@@ -90,11 +91,11 @@ function calculationTime() {
 }
 function drawTitle() {
 	var item = getTopItem();
-	$("#popText").text(item.title);
+	$('#popText').text(item.title);
 }
 function createItem() {
 	return {
-		title: $("#pushText").val(),
+		title: $('#pushText').val(),
 		elapse: 0
 	};
 }
@@ -107,11 +108,11 @@ function formatTime(selector, unit, elapse) {
 function drawTime() {
 	var elapse = +new Date() - time;
 	elapse = Math.floor(elapse / 10);
-	elapse = formatTime("#timeMsec", 100, elapse);
-	elapse = formatTime("#timeSec", 60, elapse);
-	elapse = formatTime("#timeMin", 60, elapse);
-	elapse = formatTime("#timeHour", 24, elapse);
-	$("#timeDay").text(elapse);
+	elapse = formatTime('#timeMsec', 100, elapse);
+	elapse = formatTime('#timeSec', 60, elapse);
+	elapse = formatTime('#timeMin', 60, elapse);
+	elapse = formatTime('#timeHour', 24, elapse);
+	$('#timeDay').text(elapse);
 }
 function loopTimer() {
 	setTimeout(function () {
@@ -119,10 +120,6 @@ function loopTimer() {
 		loopTimer();
 	}, Math.floor(Math.random() * 100));
 }
-var colorOfType = {
-	'start': '#f00',
-	'end': '#00f'
-};
 function getElapseString(elapse) {
 	var value, unit, timeArr = [], result = '';
 	elapse = Math.ceil(elapse / 1000);
@@ -142,31 +139,39 @@ function getElapseString(elapse) {
 	elapse -= value;
 	elapse /= unit;
 	if (0 < elapse) {
-		result += elapse + '일 ';
+		result += elapse + 'd ';
 	}
 	elapse = timeArr.pop();
 	if (0 < elapse) {
-		result += elapse + '시간 ';
+		result += elapse + 'h ';
 	}
 	elapse = timeArr.pop();
 	if (0 < elapse) {
-		result += elapse + '분 ';
+		result += elapse + 'm ';
 	}
 	elapse = timeArr.pop();
-	result += elapse + '초';
+	result += elapse + 's';
 	return result;
 }
+var colorOfType = {
+	'start': '#f00',
+	'end': '#00f'
+};
+var titleOfType = {
+	'start': '[Start]',
+	'end': '[End]'
+};
 function addLog(logItem) {
-	var text = '[' + logItem.type + '] ' + logItem.item.title + ' (' + logItem.timeStamp + ')';
+	var text = titleOfType[logItem.type] + ' ' + logItem.item.title + ' (' + logItem.timeStamp + ')';
 	if (logItem.elapse) {
-		text += ' 소요시간: ' + getElapseString(logItem.elapse);
+		text += '\nconsumed: ' + getElapseString(logItem.elapse);
 	}
-	$("#headOfList").after($("<li>").css({
+	$('#headOfList').after($('<li>').append($('<pre>').css({
 		color: colorOfType[logItem.type]
-	}).text(text));
+	}).text(text)));
 }
 function getTimeStamp() {
-	return (new Date()).toString().split(" GMT")[0];
+	return (new Date()).toString().split(' GMT')[0];
 }
 function calculationElapse() {
 	var elapse = +new Date() - time;
@@ -201,16 +206,16 @@ function popTimer() {
 	}
 	addLog(logItem);
 }
-$("#pushText").keydown(function (ev) {
+$('#pushText').keydown(function (ev) {
 	if (ev.keyCode === 13) {
 		ev.preventDefault();
-		$("#pushBtn").click();
+		$('#pushBtn').click();
 	}
 });
 function resetText() {
-	$("#pushText").val("");
+	$('#pushText').val('');
 }
-$("#pushBtn").click(function () {
+$('#pushBtn').click(function () {
 	var item = createItem();
 	calculationElapse();
 	pushTimer(item);
@@ -219,7 +224,7 @@ $("#pushBtn").click(function () {
 	drawTitle();
 	resetText();
 });
-$("#popBtn").click(function () {
+$('#popBtn').click(function () {
 	popTimer();
 	calculationTime();
 	saveData();
