@@ -14,6 +14,7 @@ body { font-family:Georgia; background:url('wood_pattern.png') repeat; }
 @font-face {font-family:'digital'; src:url('DS-DIGI.TTF');}
 .digit-font {font-size:32px; font-family:digital, arial, verdana; text-shadow:0 0 5px rgba(255, 255, 255, 1); }
 #popText {font-size:32px;}
+#timeTime {display:inline-block; min-width:141px; text-align:left; }
 button {width:95%; font-family:Georgia; font-size:32px;}
 input {width:90%; height:40px;}
 h3 {margin:2px 0; font-size:32px;}
@@ -24,7 +25,7 @@ ul {padding-left:32px; text-align:left;}
 	<body>
 		<div id="timerPanel" class="panel">
 			<span id="timeDay" class="digit-font">0</span>days
-			<span class="digit-font">
+			<span id="timeTime" class="digit-font">
 				<span id="timeHour">00</span>:<span id="timeMin">00</span>:<span id="timeSec">00</span>.<span id="timeMsec">00</span>
 			</span>
 		</div>
