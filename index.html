@@ -17,8 +17,7 @@ body { font-family:Georgia; background:url('wood_pattern.png') repeat; }
 button {width:95%; font-family:Georgia; font-size:32px;}
 input {width:90%; height:40px;}
 h3 {margin:2px 0; font-size:32px;}
-ul {text-align:left;}
-pre {margin:0; padding:0;}
+ul {padding-left:32px; text-align:left;}
 #headOfList {display:none;}
 		</style>
    	</head>
@@ -162,13 +161,15 @@ var titleOfType = {
 	'end': '[End]'
 };
 function addLog(logItem) {
-	var text = titleOfType[logItem.type] + ' ' + logItem.item.title + ' (' + logItem.timeStamp + ')';
-	if (logItem.elapse) {
-		text += '\nconsumed: ' + getElapseString(logItem.elapse);
-	}
-	$('#headOfList').after($('<li>').append($('<pre>').css({
+	var $li, text = titleOfType[logItem.type] + ' ' + logItem.item.title + ' (' + logItem.timeStamp + ')';
+	$li = $('<li>').append($('<span>').css({
 		color: colorOfType[logItem.type]
-	}).text(text)));
+	}).text(text));
+	if (logItem.elapse) {
+		$li.append('<br>');
+		$li.append($('<span>').text('consumed: ' + getElapseString(logItem.elapse)));
+	}
+	$('#headOfList').after($li);
 }
 function getTimeStamp() {
 	return (new Date()).toString().split(' GMT')[0];
