@@ -42,30 +42,37 @@ ul {padding-left:32px; text-align:left;}
 				<li id="headOfList"></li>
 			</ul>
 		</div>
-		<!-- 귀찮아.. 최근 20개만 있으면 댔지.. 머.
+		<!-- 귀찮아.. 최근 100개만 있으면 댔지.. 머.
 		<div id="morePanel" class="panel">
 			<button id="moreBtn">more..</button>
 		</div>
 		-->
 		<script src="jquery.js"></script>
 		<script>
+var DATA_VER = '1.0.0';
+var MAX_LOG = 100;
 var data = [];
 var log = [];
 var time = 0;
 function saveData() {
+	localStorage.setItem('ppt_data_ver', DATA_VER);
 	localStorage.setItem('ppt_time', '' + time);
 	localStorage.setItem('ppt_data', JSON.stringify(data));
 	localStorage.setItem('ppt_log', JSON.stringify(log));
 }
 function loadData() {
-	time = localStorage.getItem('ppt_time') || 0;
-	if (time) {
+	var dataVer = localStorage.getItem('ppt_data_ver');
+	if (dataVer === DATA_VER) {
+		time = localStorage.getItem('ppt_time');
 		data = JSON.parse(localStorage.getItem('ppt_data'));
 		log = JSON.parse(localStorage.getItem('ppt_log'));
 	} else {
+		if (DATA_VER) {
+			//TODO.azki 데이타 바꿔주기.
+		}
 		time = +new Date();
 		data = [{
-			title: 'surplus time',
+			title: 'idling',
 			elapse: -1
 		}];
 		log = [];
@@ -186,7 +193,7 @@ function pushTimer(item) {
 		timeStamp: getTimeStamp()
 	};
 	log.push(logItem);
-	if (20 < log.length) {
+	if (MAX_LOG < log.length) {
 		log.shift();
 	}
 	addLog(logItem);
@@ -202,7 +209,7 @@ function popTimer() {
 		elapse: +new Date() - time
 	};
 	log.push(logItem);
-	if (20 < log.length) {
+	if (MAX_LOG < log.length) {
 		log.shift();
 	}
 	addLog(logItem);
