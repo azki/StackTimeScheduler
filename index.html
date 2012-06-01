@@ -217,6 +217,10 @@ function resetText() {
 	$('#pushText').val('');
 }
 $('#pushBtn').click(function () {
+	if ($('#pushText').val() === '') {
+		$('#pushText').focus();
+		return;
+	}
 	var item = createItem();
 	calculationElapse();
 	pushTimer(item);
